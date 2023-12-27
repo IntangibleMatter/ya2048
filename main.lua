@@ -1,4 +1,6 @@
 function love.load()
+	require("palette.lua")
+	Init_colours()
 	love.graphics.setNewFont("arcon.otf", 64)
 	love.window.setMode(1024, 1024, { minwidth = 256, minheight = 256 })
 	love.graphics.setDefaultFilter("linear", "linear")
