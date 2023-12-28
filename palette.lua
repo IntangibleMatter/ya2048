@@ -123,13 +123,13 @@ function Hex2col(hex)
 	if string.len(hex) < 6 then
 		return { 0, 0, 0, 1 }
 	end
-	table.insert(col, tonumber(string.sub(hex, 1, 2), 16))
-	table.insert(col, tonumber(string.sub(hex, 3, 4), 16))
-	table.insert(col, tonumber(string.sub(hex, 5, 6), 16))
+	table.insert(col, tonumber(string.sub(hex, 1, 2), 16) / 255)
+	table.insert(col, tonumber(string.sub(hex, 3, 4), 16) / 255)
+	table.insert(col, tonumber(string.sub(hex, 5, 6), 16) / 255)
 	if string.len(hex) >= 8 then
-		col.insert(tonumber(string.sub(hex, 7, 8), 16))
+		table.insert(col, tonumber(string.sub(hex, 7, 8), 16) / 255)
 	else
-		col.insert(0)
+		table.insert(col, 1)
 	end
 
 	return col
