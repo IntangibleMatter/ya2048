@@ -5,7 +5,7 @@ function love.load()
 	Init_colours()
 	Set_palette(Palettes.nord)
 	love.graphics.setNewFont("arcon.otf", 64)
-	love.window.setMode(1024, 1024, { minwidth = 256, minheight = 256, resizable = true })
+	love.window.setMode(1024, 1024, { minwidth = 100, minheight = 100, resizable = true })
 	love.graphics.setDefaultFilter("linear", "linear")
 	love.window.setTitle("Yet Another 2048")
 	Keymaps = {
@@ -21,8 +21,40 @@ function love.load()
 end
 
 function love.draw()
-	Gameboard.draw(Gameboard)
+	local drawnboard = Gameboard.draw(Gameboard)
+	Render_board_to_screen(drawnboard)
 	--love.graphics.print("2048", 32, 32)
+end
+
+function Render_board_to_screen(drawnboard)
+	local boardscale = 1
+	local winsize = {
+		x = love.graphics.getWidth(),
+		y = love.graphics.getHeight(),
+	}
+	local boardsize = {
+		x = drawnboard:getWidth(),
+		y = drawnboard:getHeight(),
+	}
+	-- fine to get it like this, should be symmetrical
+	if boardsize.x > winsize.x then
+		boardscale = boardsize.x / winsize.x
+	end
+	if boardsize.y > winsize.y then
+		if boardscale < boardsize.y / winsize.y then
+			boardscale = boardsize.y / winsize.y
+		end
+	end
+	love.graphics.draw(
+		drawnboard,
+		winsize.x / 2,
+		winsize.y / 2,
+		0,
+		1 / boardscale,
+		1 / boardscale,
+		boardsize.x / 2,
+		boardsize.y / 2
+	)
 end
 
 function love.keypressed(key)

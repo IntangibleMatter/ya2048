@@ -116,6 +116,7 @@ end
 
 function Set_palette(pal)
 	Colours = pal
+	love.graphics.setBackgroundColor(Colours.screen_bg)
 end
 
 function Hex2col(hex)

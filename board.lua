@@ -183,6 +183,8 @@ function Board:move(dir)
 end
 
 function Board:draw()
+	local drawing = love.graphics.newCanvas(self.drawboardsize, self.drawboardsize)
+	love.graphics.setCanvas(drawing)
 	love.graphics.setColor(Colours.board_bg)
 	love.graphics.rectangle("fill", self.pos.x, self.pos.y, self.drawboardsize, self.drawboardsize)
 	if self.changetimer > 0 then
@@ -190,6 +192,8 @@ function Board:draw()
 	else
 		self.draw_tiles(self)
 	end
+	love.graphics.setCanvas()
+	return drawing
 end
 
 function Board:draw_moving_tiles()
@@ -201,7 +205,7 @@ function Board:copy_to_moving_board()
 	self.movingboard = {}
 	for x = 1, self.boardsize do
 		for y = 1, self.boardsize do
-			print(x, y, board[x][y])
+			print(x, y, self.board[x][y])
 			table.insert(self.movingboard, { x = x, y = y, self.board[x][y] })
 		end
 	end
@@ -243,4 +247,33 @@ function Board:spawn_tile()
 		local tile = free_tiles[math.random(#free_tiles)]
 		self.board[tile.x][tile.y] = 2
 	end
+end
+
+function Board:check_if_dead()
+	local free_moves = 0
+	for x = 1, self.boardsize do
+		for y = 1, self.boardsize do
+			if x - 1 <= 0 then
+				if self.board[x - 1][y] == self.board[x][y] or self.board[x - 1][y] == 0 then
+					free_moves = free_moves + 1
+				end
+			end
+			if x + 1 <= 0 then
+				if self.board[x + 1][y] == self.board[x][y] or self.board[x + 1][y] == 0 then
+					free_moves = free_moves + 1
+				end
+			end
+			if y - 1 <= 0 then
+				if self.board[x][y - 1] == self.board[x][y] or self.board[x][y - 1] == 0 then
+					free_moves = free_moves + 1
+				end
+			end
+			if y + 1 <= 0 then
+				if self.board[x][y + 1] == self.board[x][y] or self.board[x][y + 1] == 0 then
+					free_moves = free_moves + 1
+				end
+			end
+		end
+	end
+	return free_moves == 0
 end
