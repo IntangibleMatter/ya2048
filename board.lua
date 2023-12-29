@@ -16,22 +16,24 @@ Board = {
 function Board:new()
 	local b = {}
 	setmetatable(b, { __index = Board })
-	changetimer = 0
+	b.changetimer = 0
 	for x = 1, b.boardsize do
 		for y = 1, b.boardsize do
 			b.board[x][y] = 0
 		end
 	end
-	b.drawboardsize = self.tilesize * self.boardsize + self.tilemargin * self.boardsize
+	b.drawboardsize = self.tilesize * self.boardsize + self.tilemargin * (self.boardsize + 1)
 	b.spawn_tile(b)
 	b.spawn_tile(b)
-	print(b.drawboardsize)
+	Print_table(b)
+	Print_table(b.board)
 	return b
 end
 
 function Board:move(dir)
 	local function moveup(board, movement)
 		local moved = 0
+		local combined = {}
 		for x = 1, self.boardsize do
 			for y = 2, self.boardsize do
 				if board[x][y] ~= 0 then
@@ -44,10 +46,13 @@ function Board:move(dir)
 						end
 					end
 					if depth ~= -1 then
-						if board[x][depth] == 0 then
-							board[x][depth] = board[x][y]
-						else
+						if Check_in_table(combined, { x = x, y = depth }) then
+							board[x][depth + 1] = board[x][y]
+						elseif board[x][depth] == board[x][y] then
 							board[x][depth] = board[x][y] * 2
+							table.insert(combined, { x = x, y = depth })
+						else
+							board[x][depth] = board[x][y]
 						end
 						board[x][y] = 0
 						moved = moved + 1
@@ -61,6 +66,7 @@ function Board:move(dir)
 
 	local function movedown(board, movement)
 		local moved = 0
+		local combined = {}
 		for x = 1, self.boardsize do
 			for y = self.boardsize - 1, 1, -1 do
 				if board[x][y] ~= 0 then
@@ -73,10 +79,13 @@ function Board:move(dir)
 						end
 					end
 					if depth ~= -1 then
-						if board[x][depth] == 0 then
-							board[x][depth] = board[x][y]
-						else
+						if Check_in_table(combined, { x = x, y = depth }) then
+							board[x][depth - 1] = board[x][y]
+						elseif board[x][depth] == board[x][y] then
 							board[x][depth] = board[x][y] * 2
+							table.insert(combined, { x = x, y = depth })
+						else
+							board[x][depth] = board[x][y]
 						end
 						board[x][y] = 0
 						moved = moved + 1
@@ -90,6 +99,7 @@ function Board:move(dir)
 
 	local function moveleft(board, movement)
 		local moved = 0
+		local combined = {}
 		for y = 1, self.boardsize do
 			for x = 2, self.boardsize do
 				if board[x][y] ~= 0 then
@@ -102,10 +112,13 @@ function Board:move(dir)
 						end
 					end
 					if depth ~= -1 then
-						if board[depth][y] == 0 then
-							board[depth][y] = board[x][y]
-						else
+						if Check_in_table(combined, { x = depth, y = y }) then
+							board[depth + 1][y] = board[x][y]
+						elseif board[depth][y] == board[x][y] then
 							board[depth][y] = board[x][y] * 2
+							table.insert(combined, { x = depth, y = y })
+						else
+							board[depth][y] = board[x][y]
 						end
 						board[x][y] = 0
 						moved = moved + 1
@@ -119,6 +132,7 @@ function Board:move(dir)
 
 	local function moveright(board, movement)
 		local moved = 0
+		local combined = {}
 		for y = 1, self.boardsize do
 			for x = self.boardsize - 1, 1, -1 do
 				if board[x][y] ~= 0 then
@@ -131,10 +145,13 @@ function Board:move(dir)
 						end
 					end
 					if depth ~= -1 then
-						if board[depth][y] == 0 then
-							board[depth][y] = board[x][y]
-						else
+						if Check_in_table(combined, { x = depth, y = y }) then
+							board[depth - 1][y] = board[x][y]
+						elseif board[depth][y] == board[x][y] then
 							board[depth][y] = board[x][y] * 2
+							table.insert(combined, { x = depth, y = y })
+						else
+							board[depth][y] = board[x][y]
 						end
 						board[x][y] = 0
 						moved = moved + 1
@@ -160,15 +177,15 @@ function Board:move(dir)
 	end
 	if changed then
 		self:spawn_tile()
-		self.changetimer = self.movelength
-		self.copy_to_moving_board(self)
+		--self.changetimer = self.movelength
+		--self.copy_to_moving_board(self)
 	end
 end
 
 function Board:draw()
 	love.graphics.setColor(Colours.board_bg)
 	love.graphics.rectangle("fill", self.pos.x, self.pos.y, self.drawboardsize, self.drawboardsize)
-	if self.movelength ~= 0 then
+	if self.changetimer > 0 then
 		self.draw_moving_tiles(self)
 	else
 		self.draw_tiles(self)
@@ -176,14 +193,16 @@ function Board:draw()
 end
 
 function Board:draw_moving_tiles()
-	for tile in table.
+	-- for tile in table.
 end
 
 function Board:copy_to_moving_board()
+	Print_table(self.board)
 	self.movingboard = {}
 	for x = 1, self.boardsize do
 		for y = 1, self.boardsize do
-			table.insert(self.movingboard, { x = x, y = y, board[x][y] })
+			print(x, y, board[x][y])
+			table.insert(self.movingboard, { x = x, y = y, self.board[x][y] })
 		end
 	end
 end
@@ -194,11 +213,15 @@ function Board:draw_tiles()
 			love.graphics.setColor(Colours.tile_bg)
 			love.graphics.rectangle(
 				"fill",
-				((x - 1) * self.tilesize) + (self.tilemargin / 2),
-				((y - 1) * self.tilesize) + (self.tilemargin / 2),
+				((x - 1) * self.tilesize) + (self.tilemargin * x),
+				((y - 1) * self.tilesize) + (self.tilemargin * y),
 				self.tilesize,
 				self.tilesize
 			)
+		end
+	end
+	for x = 1, self.boardsize do
+		for y = 1, self.boardsize do
 			if self.board[x][y] ~= 0 then
 				Draw_tile(self.board[x][y], { x = x, y = y }, self.tilesize, self.tilemargin)
 			end
