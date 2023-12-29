@@ -15,6 +15,7 @@ function love.load()
 		left = { "left", "a", "h" },
 		right = { "right", "d", "l" },
 	}
+	math.randomseed(os.time())
 	Gameboard = Board:new()
 	--[[for k, v in pairs(Colours.tile) do
 		print("set:", k, "[", v[1], v[2], v[3], "]")

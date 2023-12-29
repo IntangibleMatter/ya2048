@@ -261,7 +261,11 @@ function Board:spawn_tile()
 	end
 	if free_tiles ~= {} then
 		local tile = free_tiles[math.random(#free_tiles)]
-		self.board[tile.x][tile.y] = 2
+		local value = 2
+		if math.random() > 0.7 then
+			value = 4
+		end
+		self.board[tile.x][tile.y] = value
 	end
 end
 
