@@ -11,6 +11,7 @@ Board = {
 	changetimer = 0,
 	changes = {},
 	movingboard = {},
+	dead = false,
 }
 
 function Board:new()
@@ -179,6 +180,9 @@ function Board:move(dir)
 		self:spawn_tile()
 		--self.changetimer = self.movelength
 		--self.copy_to_moving_board(self)
+		if self:check_if_dead() then
+			self.dead = true
+		end
 	end
 end
 
@@ -187,7 +191,19 @@ function Board:draw()
 	love.graphics.setCanvas(drawing)
 	love.graphics.setColor(Colours.board_bg)
 	love.graphics.rectangle("fill", self.pos.x, self.pos.y, self.drawboardsize, self.drawboardsize)
-	if self.changetimer > 0 then
+	if self.dead then
+		love.graphics.setColor(Colours.text)
+		love.graphics.print(
+			"GAME\nOVER",
+			self.drawboardsize / 2,
+			self.drawboardsize / 2,
+			0,
+			2,
+			2,
+			love.graphics.getFont():getWidth("GAME\nOVER") / 2,
+			love.graphics.getFont():getHeight()
+		)
+	elseif self.changetimer > 0 then
 		self.draw_moving_tiles(self)
 	else
 		self.draw_tiles(self)
@@ -253,22 +269,22 @@ function Board:check_if_dead()
 	local free_moves = 0
 	for x = 1, self.boardsize do
 		for y = 1, self.boardsize do
-			if x - 1 <= 0 then
+			if x - 1 >= 1 then
 				if self.board[x - 1][y] == self.board[x][y] or self.board[x - 1][y] == 0 then
 					free_moves = free_moves + 1
 				end
 			end
-			if x + 1 <= 0 then
+			if x + 1 <= self.boardsize then
 				if self.board[x + 1][y] == self.board[x][y] or self.board[x + 1][y] == 0 then
 					free_moves = free_moves + 1
 				end
 			end
-			if y - 1 <= 0 then
+			if y - 1 >= 1 then
 				if self.board[x][y - 1] == self.board[x][y] or self.board[x][y - 1] == 0 then
 					free_moves = free_moves + 1
 				end
 			end
-			if y + 1 <= 0 then
+			if y + 1 <= self.boardsize then
 				if self.board[x][y + 1] == self.board[x][y] or self.board[x][y + 1] == 0 then
 					free_moves = free_moves + 1
 				end

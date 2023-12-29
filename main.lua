@@ -3,11 +3,12 @@ function love.load()
 	require("board")
 	require("utils")
 	Init_colours()
-	Set_palette(Palettes.nord)
+	Set_palette(Palettes.tokyonight)
 	love.graphics.setNewFont("arcon.otf", 64)
 	love.window.setMode(1024, 1024, { minwidth = 100, minheight = 100, resizable = true })
 	love.graphics.setDefaultFilter("linear", "linear")
 	love.window.setTitle("Yet Another 2048")
+	love.window.setIcon(love.image.newImageData("icon.png"))
 	Keymaps = {
 		up = { "up", "w", "k" },
 		down = { "down", "s", "j" },
@@ -15,9 +16,10 @@ function love.load()
 		right = { "right", "d", "l" },
 	}
 	Gameboard = Board:new()
-	for k, v in pairs(Colours.tile) do
+	--[[for k, v in pairs(Colours.tile) do
 		print("set:", k, "[", v[1], v[2], v[3], "]")
-	end
+	end]]
+	--
 end
 
 function love.draw()
