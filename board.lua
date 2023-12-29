@@ -12,12 +12,14 @@ Board = {
 	changes = {},
 	movingboard = {},
 	dead = false,
+	deadtimer = 0,
 }
 
 function Board:new()
 	local b = {}
 	setmetatable(b, { __index = Board })
 	b.changetimer = 0
+	b.deadtimer = 0
 	for x = 1, b.boardsize do
 		for y = 1, b.boardsize do
 			b.board[x][y] = 0
@@ -191,7 +193,19 @@ function Board:draw()
 	love.graphics.setCanvas(drawing)
 	love.graphics.setColor(Colours.board_bg)
 	love.graphics.rectangle("fill", self.pos.x, self.pos.y, self.drawboardsize, self.drawboardsize)
+	if self.changetimer > 0 then
+		self.draw_moving_tiles(self)
+	else
+		self.draw_tiles(self)
+	end
 	if self.dead then
+		love.graphics.setColor(
+			Colours.board_bg[1],
+			Colours.board_bg[2],
+			Colours.board_bg[3],
+			(math.min(self.deadtimer - 1, 2) / 2)
+		)
+		love.graphics.rectangle("fill", self.pos.x, self.pos.y, self.drawboardsize, self.drawboardsize)
 		love.graphics.setColor(Colours.text)
 		love.graphics.print(
 			"GAME\nOVER",
@@ -203,10 +217,6 @@ function Board:draw()
 			love.graphics.getFont():getWidth("GAME\nOVER") / 2,
 			love.graphics.getFont():getHeight()
 		)
-	elseif self.changetimer > 0 then
-		self.draw_moving_tiles(self)
-	else
-		self.draw_tiles(self)
 	end
 	love.graphics.setCanvas()
 	return drawing

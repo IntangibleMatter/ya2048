@@ -29,6 +29,12 @@ function love.draw()
 	--love.graphics.print("2048", 32, 32)
 end
 
+function love.update(dt)
+	if Gameboard.dead then
+		Gameboard.deadtimer = Gameboard.deadtimer + dt
+	end
+end
+
 function Render_board_to_screen(drawnboard)
 	local boardscale = 1
 	local winsize = {
