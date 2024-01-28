@@ -13,11 +13,13 @@ Board = {
 	movingboard = {},
 	dead = false,
 	deadtimer = 0,
+	boardhistory = {},
 }
 
 function Board:new()
 	local b = {}
 	setmetatable(b, { __index = Board })
+	b.boardhistory = {}
 	b.changetimer = 0
 	b.deadtimer = 0
 	for x = 1, b.boardsize do
@@ -180,6 +182,7 @@ function Board:move(dir)
 	end
 	if changed then
 		self:spawn_tile()
+		self:add_to_history()
 		--self.changetimer = self.movelength
 		--self.copy_to_moving_board(self)
 		if self:check_if_dead() then
@@ -306,4 +309,32 @@ function Board:check_if_dead()
 		end
 	end
 	return free_moves == 0
+end
+
+function Board:copy_board()
+	local newboard = {}
+
+	for _, v in pairs(self.board) do
+		local boardelement = {}
+		for _, v in pairs(v) do
+			table.insert(boardelement, v)
+		end
+		table.insert(newboard, boardelement)
+	end
+	return newboard
+end
+
+function Board:add_to_history()
+	table.insert(self.boardhistory, self.copy_board(self))
+end
+
+function Board:undo()
+	if #self.boardhistory > 1 then
+		self.board = self.boardhistory[#self.boardhistory - 1]
+		table.remove(self.boardhistory, #self.boardhistory)
+		if self.dead then
+			self.dead = false
+			self.deadtimer = 0
+		end
+	end
 end

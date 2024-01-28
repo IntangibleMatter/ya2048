@@ -14,6 +14,7 @@ function love.load()
 		down = { "down", "s", "j" },
 		left = { "left", "a", "h" },
 		right = { "right", "d", "l" },
+		undo = { "shift", "tab", "z", "u" },
 	}
 	math.randomseed(os.time())
 	Gameboard = Board:new()
@@ -75,6 +76,8 @@ function love.keypressed(key)
 		Gameboard:move("left")
 	elseif Check_in_table(Keymaps.right, key) then
 		Gameboard:move("right")
+	elseif Check_in_table(Keymaps.undo, key) then
+		Gameboard:undo()
 	elseif key == "r" then
 		Gameboard = Board:new()
 	end
