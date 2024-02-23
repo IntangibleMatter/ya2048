@@ -5,7 +5,7 @@ Board = {
 	movelength = 0.2,
 	pos = { x = 0, y = 0 },
 	tilesize = 96,
-	boardsize = 4,
+	boardsize = 5,
 	tilemargin = 8,
 	drawboardsize = 0,
 	changetimer = 0,
@@ -22,9 +22,15 @@ function Board:new()
 	b.boardhistory = {}
 	b.changetimer = 0
 	b.deadtimer = 0
+	b.board = {}
 	for x = 1, b.boardsize do
+		b.board[x] = {}
 		for y = 1, b.boardsize do
+			print("pre:", x, y)
+			print(" -- ", b.board[x][y])
 			b.board[x][y] = 0
+			print("aft:", x, y)
+			print(" -- ", b.board[x][y])
 		end
 	end
 	b.drawboardsize = self.tilesize * self.boardsize + self.tilemargin * (self.boardsize + 1)
