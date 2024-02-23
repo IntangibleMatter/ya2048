@@ -26,18 +26,14 @@ function Board:new()
 	for x = 1, b.boardsize do
 		b.board[x] = {}
 		for y = 1, b.boardsize do
-			print("pre:", x, y)
-			print(" -- ", b.board[x][y])
 			b.board[x][y] = 0
-			print("aft:", x, y)
-			print(" -- ", b.board[x][y])
 		end
 	end
 	b.drawboardsize = self.tilesize * self.boardsize + self.tilemargin * (self.boardsize + 1)
 	b.spawn_tile(b)
 	b.spawn_tile(b)
-	Print_table(b)
-	Print_table(b.board)
+	--Print_table(b)
+	--Print_table(b.board)
 	return b
 end
 
@@ -343,4 +339,33 @@ function Board:undo()
 			self.deadtimer = 0
 		end
 	end
+end
+
+function Board:save()
+	local savedata = ""
+	for x = 1, self.boardsize do
+		for y = 1, self.boardsize do
+			savedata = savedata .. self.board[x][y] .. " "
+		end
+		savedata = savedata .. "\n"
+	end
+	love.filesystem.write("board.2048", savedata)
+	--	love.filesystem.write("history.2048", self.boardhistory)
+end
+
+function Board:load()
+	local savedata = love.filesystem.read("board.2048")
+	self.board = {}
+	self.boardhistory = {}
+	for s in savedata:gmatch("(.-)\n") do
+		table.insert(self.board, {})
+		print("---", s, "---")
+		for t in s:gmatch("(.-) ") do
+			print("+++", t, "+++")
+			if t ~= "" then
+				table.insert(self.board[#self.board], tonumber(t))
+			end
+		end
+	end
+	Print_table(self.board)
 end

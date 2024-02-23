@@ -3,7 +3,8 @@ function love.load()
 	require("board")
 	require("utils")
 	Init_colours()
-	Set_palette(Palettes.tokyonight)
+	Set_palette(Palettes.catppucin)
+	love.filesystem.setIdentity("ya2048")
 	love.graphics.setNewFont("arcon.otf", 64)
 	love.window.setMode(1024, 1024, { minwidth = 100, minheight = 100, resizable = true })
 	love.graphics.setDefaultFilter("linear", "linear")
@@ -15,6 +16,8 @@ function love.load()
 		left = { "left", "a", "h" },
 		right = { "right", "d", "l" },
 		undo = { "shift", "tab", "z", "u" },
+		save = { "pageup", "[" },
+		load = { "pagedown", "]" },
 	}
 	math.randomseed(os.time())
 	Gameboard = Board:new()
@@ -80,6 +83,10 @@ function love.keypressed(key)
 		Gameboard:undo()
 	elseif key == "r" then
 		Gameboard = Board:new()
+	elseif Check_in_table(Keymaps.save, key) then
+		Gameboard:save()
+	elseif Check_in_table(Keymaps.load, key) then
+		Gameboard:load()
 	end
 end
 
